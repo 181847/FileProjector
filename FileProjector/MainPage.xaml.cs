@@ -27,15 +27,50 @@ namespace FileProjector
     public sealed partial class MainPage : Page
     {
         // 当前正在处理的源文件夹
-        private IStorageFolder currSourceFolder = null;
-        // 当前正在处理的目标文件夹
-        private IStorageFolder currDestFolder = null;
+        private StorageFolder       currSourceFolder    = null;
+        // 当前正在处理的源文件（不包括文件夹）
+        private List<StorageFile>   currSourceFileList  = null;
 
-        private System.IO.FileSystemWatcher sourceWatcher = null;
-        
+        // 当前正在处理的目标文件夹
+        private StorageFolder       currDestFolder      = null;
+        // 当前正在处理的目标文件（不包括文件夹）
+        private List<StorageFile>   currDestFileList    = null;
+
+
         public MainPage()
         {
             this.InitializeComponent();
+            currSourceFileList  = new List<StorageFile>();
+            currDestFileList    = new List<StorageFile>();
+        }
+
+        // 更新源文件夹下的显示文件。
+        private async void UpdateSourceFileList()
+        {
+            var files = await currSourceFolder.GetFilesAsync();
+            sourceFileList.Items.Clear();
+            currSourceFileList.Clear();
+
+            foreach (var file in files)
+            {
+                currSourceFileList.Add(file);
+                sourceFileList.Items.Add(file.Name);
+            }
+            
+        }
+
+        // 更新目标文件夹下的显示文件。
+        private async void UpdateDestFileList()
+        {
+            var files = await currDestFolder.GetFilesAsync();
+            destFileList.Items.Clear();
+            currDestFileList.Clear();
+
+            foreach (var file in files)
+            {
+                currDestFileList.Add(file);
+                destFileList.Items.Add(file.Name);
+            }
         }
 
         // 检查并且设置DragOver事件的数据，只接受包含文件夹的拖拽。
@@ -119,8 +154,9 @@ namespace FileProjector
 
         private async void sourceFolderButton_Drop(object sender, DragEventArgs e)
         {
-            currSourceFolder = await GetFirstStorageFolderFromDragEvent(e);
+            currSourceFolder = await GetFirstStorageFolderFromDragEvent(e) as StorageFolder;
             sourceFolderPathText.Text = currSourceFolder.Path;
+            UpdateSourceFileList();
         }
 
         private async void sourceFolderButton_DragEnter(object sender, DragEventArgs e)
@@ -135,8 +171,9 @@ namespace FileProjector
 
         private async void destFolderButton_Drop(object sender, DragEventArgs e)
         {
-            currDestFolder = await GetFirstStorageFolderFromDragEvent(e);
+            currDestFolder = await GetFirstStorageFolderFromDragEvent(e) as StorageFolder;
             destFolderPathText.Text = currDestFolder.Path;
+            UpdateDestFileList();
         }
     }
 }

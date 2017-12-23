@@ -29,9 +29,13 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         
         <!--源文件操作区域-->
-        <StackPanel Name="sourceOperationStackPanel" Grid.Column="0" Grid.Row="0">
+        <StackPanel Name="sourceOperationStackPanel" Grid.Column="0" Grid.Row="0" >
             <!--拖拽区域-->
             <Button Name="sourceFolderButton" 
                 Style="{StaticResource ProcessFolderButtonStyle}"
@@ -46,8 +50,12 @@
             <TextBlock Name="sourceFolderPathText"
                        Text=""
                        Style="{StaticResource FolderTextStyle}"/>
-            <ListBox Name="sourceFileList" Style="{StaticResource ShowFileListBoxStyle}" />
         </StackPanel>
+        <!--显示原文件夹下的所有文件-->
+        <ScrollViewer Name="sourceFileScrollViewer" Grid.Column="0" Grid.Row="1">
+            <ListBox Name="sourceFileList" Style="{StaticResource ShowFileListBoxStyle}" />
+        </ScrollViewer>
+        
         <!--目标文件操作区域-->
         <StackPanel Name="destOperationStackPanel" Grid.Column="1" Grid.Row="0">
             <!--拖拽区域-->
@@ -64,7 +72,10 @@
             <TextBlock Name="destFolderPathText"
                        Text=""
                        Style="{StaticResource FolderTextStyle}"/>
-            <ListBox Name="destFileList" Style="{StaticResource ShowFileListBoxStyle}" />
         </StackPanel>
+        <!--显示目标文件夹下的所有文件-->
+        <ScrollViewer Name="destFileScrollViewer" Grid.Column="1" Grid.Row="1">
+            <ListBox Name="destFileList" Style="{StaticResource ShowFileListBoxStyle}" />
+        </ScrollViewer>
     </Grid>
 </Page>
