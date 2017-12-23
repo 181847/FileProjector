@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="FileProjector.MainPage"
+    x:Class="FileProjector.BlankPage1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:FileProjector"
@@ -33,7 +33,6 @@
             <!--拖拽区域-->
             <Button Name="sourceFileButton" 
                 Style="{StaticResource ProcessFolderButtonStyle}"
-                AllowDrop="True"
                 DragEnter="sourceFileButton_DragEnter"
                 Drop="sourceFileButton_Drop"
                 Content="拖放源文件夹至此" />
