@@ -56,7 +56,6 @@ namespace FileProjector
                 currSourceFileList.Add(file);
                 sourceFileList.Items.Add(file.Name);
             }
-            
         }
 
         // 更新目标文件夹下的显示文件。
@@ -173,6 +172,31 @@ namespace FileProjector
         {
             currDestFolder = await GetFirstStorageFolderFromDragEvent(e) as StorageFolder;
             destFolderPathText.Text = currDestFolder.Path;
+            UpdateDestFileList();
+        }
+
+        // 响应主要的复制文件按钮，将源文件列表中的文件复制到目标文件夹中。
+        private async void MainCopyFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 首先更新所有的文件。
+            UpdateSourceFileList();
+            UpdateDestFileList();
+
+            int numCopyFiles = currSourceFileList.Count;
+            int numFinished = 0;
+
+            // 复制所有结果
+            foreach (var file in currSourceFileList)
+            {
+                ++numFinished;
+                await file.CopyAsync(currDestFolder, file.Name, NameCollisionOption.ReplaceExisting);
+                MainCopyProgressBar.Value = (1.0 * numFinished) / numCopyFiles;
+            }
+        }
+
+        private void RefreshAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSourceFileList();
             UpdateDestFileList();
         }
     }
