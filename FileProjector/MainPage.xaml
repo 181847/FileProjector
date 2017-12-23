@@ -1,0 +1,61 @@
+﻿<Page
+    x:Class="FileProjector.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FileProjector"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <Style TargetType="TextBlock" x:Key="FolderTextStyle">
+            <Setter Property="FontSize" Value="32"/>
+        </Style>
+        <Style TargetType="Button" x:Key="ProcessFolderButtonStyle">
+            <Setter Property="Width" Value="auto" />
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        
+
+        <StackPanel Name="leftStackPanel" Grid.Column="0" Grid.Row="0">
+            <Button Name="sourceFileButton" 
+                Content="拖放文件至此" 
+                FontSize="32"
+                Width="auto" 
+                Height="auto"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                Click="testSourceSideButton_Click"
+                AllowDrop="True"
+                DragOver="testSourceSideButton_DragOver"
+                Drop="testSourceSideButton_Drop"/>
+            <TextBlock Name="leftFirstTxtBlock" 
+                       Text="源文件夹列表：" 
+                       Style="{StaticResource FolderTextStyle}"/>
+            <ListBox Name="sourceFileList" Background="Gray" />
+        </StackPanel>
+        <StackPanel Name="rightStackPanel" Grid.Column="1" Grid.Row="0">
+            <Button Name="testDestSideButton" 
+                Content="拖放目标文件夹在此" 
+                FontSize="32"
+                Width="auto" 
+                Height="auto"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                Click="testSourceSideButton_Click"
+                AllowDrop="True"
+                DragOver="testSourceSideButton_DragOver"
+                Drop="testSourceSideButton_Drop"/>
+            <TextBlock Name="destFolderTextBlock" 
+                       Text="源文件夹列表：" 
+                       Style="{StaticResource FolderTextStyle}"/>
+            <ListBox Name="destFileList" Background="Gray" />
+        </StackPanel>
+    </Grid>
+</Page>
