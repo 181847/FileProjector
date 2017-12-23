@@ -30,26 +30,37 @@
         </Grid.ColumnDefinitions>
         
         <StackPanel Name="sourceOperationStackPanel" Grid.Column="0" Grid.Row="0">
+            <!--拖拽区域-->
             <Button Name="sourceFileButton" 
                 Style="{StaticResource ProcessFolderButtonStyle}"
                 Content="拖放源文件夹至此" 
-                Click="testSourceSideButton_Click"
-                DragOver="testSourceSideButton_DragOver"
-                Drop="testSourceSideButton_Drop"/>
+                DragOver="sourceFileButton_DragOver"
+                Drop="sourceFileButton_Drop"/>
+            <!--标题信息显示-->
             <TextBlock Name="sourceFolderDisplayText" 
                        Text="源文件列表：" 
+                       Style="{StaticResource FolderTextStyle}"/>
+            <!--显示源文件夹路径-->
+            <TextBlock Name="sourceFolderPathText"
+                       Text=""
                        Style="{StaticResource FolderTextStyle}"/>
             <ListBox Name="sourceFileList" Style="{StaticResource ShowFileListBoxStyle}" />
         </StackPanel>
         <StackPanel Name="destOperationStackPanel" Grid.Column="1" Grid.Row="0">
+            <!--拖拽区域-->
             <Button Name="testDestSideButton" 
                 Style="{StaticResource ProcessFolderButtonStyle}"
                 Content="拖放目标文件夹至此" 
                 Click="testSourceSideButton_Click"
                 DragOver="testSourceSideButton_DragOver"
                 Drop="testSourceSideButton_Drop"/>
+            <!--标题信息显示-->
             <TextBlock Name="destFolderTextBlock" 
                        Text="目标文件列表：" 
+                       Style="{StaticResource FolderTextStyle}"/>
+            <!--显示目标文件夹路径-->
+            <TextBlock Name="destFolderPathText"
+                       Text=""
                        Style="{StaticResource FolderTextStyle}"/>
             <ListBox Name="destFileList" Style="{StaticResource ShowFileListBoxStyle}" />
         </StackPanel>
