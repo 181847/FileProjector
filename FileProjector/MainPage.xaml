@@ -10,8 +10,16 @@
         <Style TargetType="TextBlock" x:Key="FolderTextStyle">
             <Setter Property="FontSize" Value="32"/>
         </Style>
-        <Style TargetType="Button" x:Key="ProcessFolderButtonStyle">
+        <Style TargetType="Button" x:Key="ProcessFolderButtonStyle" >
+            <Setter Property="FontSize" Value="32" />
             <Setter Property="Width" Value="auto" />
+            <Setter Property="Height" Value="auto" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="AllowDrop" Value="True"/>
+        </Style>
+        <Style TargetType="ListBox" x:Key="ShowFileListBoxStyle">
+            <Setter Property="Background" Value="LightGray" />
         </Style>
     </Page.Resources>
 
@@ -20,42 +28,30 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-
         
-
-        <StackPanel Name="leftStackPanel" Grid.Column="0" Grid.Row="0">
+        <StackPanel Name="sourceOperationStackPanel" Grid.Column="0" Grid.Row="0">
             <Button Name="sourceFileButton" 
-                Content="拖放文件至此" 
-                FontSize="32"
-                Width="auto" 
-                Height="auto"
-                VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch"
+                Style="{StaticResource ProcessFolderButtonStyle}"
+                Content="拖放源文件夹至此" 
                 Click="testSourceSideButton_Click"
-                AllowDrop="True"
                 DragOver="testSourceSideButton_DragOver"
                 Drop="testSourceSideButton_Drop"/>
-            <TextBlock Name="leftFirstTxtBlock" 
-                       Text="源文件夹列表：" 
+            <TextBlock Name="sourceFolderDisplayText" 
+                       Text="源文件列表：" 
                        Style="{StaticResource FolderTextStyle}"/>
-            <ListBox Name="sourceFileList" Background="Gray" />
+            <ListBox Name="sourceFileList" Style="{StaticResource ShowFileListBoxStyle}" />
         </StackPanel>
-        <StackPanel Name="rightStackPanel" Grid.Column="1" Grid.Row="0">
+        <StackPanel Name="destOperationStackPanel" Grid.Column="1" Grid.Row="0">
             <Button Name="testDestSideButton" 
-                Content="拖放目标文件夹在此" 
-                FontSize="32"
-                Width="auto" 
-                Height="auto"
-                VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch"
+                Style="{StaticResource ProcessFolderButtonStyle}"
+                Content="拖放目标文件夹至此" 
                 Click="testSourceSideButton_Click"
-                AllowDrop="True"
                 DragOver="testSourceSideButton_DragOver"
                 Drop="testSourceSideButton_Drop"/>
             <TextBlock Name="destFolderTextBlock" 
-                       Text="源文件夹列表：" 
+                       Text="目标文件列表：" 
                        Style="{StaticResource FolderTextStyle}"/>
-            <ListBox Name="destFileList" Background="Gray" />
+            <ListBox Name="destFileList" Style="{StaticResource ShowFileListBoxStyle}" />
         </StackPanel>
     </Grid>
 </Page>
