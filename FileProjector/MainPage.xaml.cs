@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -24,45 +25,83 @@ namespace FileProjector
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        // 当前正在处理的源文件夹
+        private IStorageFolder currSourceFolder = null;
+        // 当前正在处理的目标文件夹
+        private IStorageFolder currDestFolder = null;
+        
         public MainPage()
         {
             this.InitializeComponent();
         }
 
-        private int testSourceCount = 0;
-        private void testSourceSideButton_Click(object sender, RoutedEventArgs e)
-        {
-            ++testSourceCount;
-            sourceFileList.Items.Add("new test file" + testSourceCount.ToString());
-        }
-
-        private void testSourceSideButton_DragOver(object sender, DragEventArgs e)
+        // 检查并且设置DragOver事件的数据，只接受包含文件夹的拖拽。
+        private async void CheckDragOverData_OnlyFolderAccept(DragEventArgs e)
         {
             e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
-        }
-
-        private async void testSourceSideButton_Drop(object sender, DragEventArgs e)
-        {
+            bool haveFolder = false;
+            // 检查拖拽项目中是否存在文件夹
             if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
                 var items = await e.DataView.GetStorageItemsAsync();
-                if (items.Count > 0)
+                foreach (var stgItem in items)
                 {
-                    var storageItem = items[0] as IStorageItem;
-                    string sItemTypePrefix = "";
-                    if (storageItem.IsOfType(StorageItemTypes.Folder))
+                    if (stgItem.IsOfType(StorageItemTypes.Folder))
                     {
-                        sItemTypePrefix = "文件夹：";
+                        haveFolder = true;
                     }
-                    else if (storageItem.IsOfType(StorageItemTypes.File))
+                }
+                
+            }
+
+            // 只有拖拽项目中包含文件夹才处理接下来的流程。
+            if (haveFolder)
+            {
+                e.AcceptedOperation = DataPackageOperation.Copy;
+                e.DragUIOverride.Caption = "放置文件夹";
+            }
+            // 否则不接受拖拽。
+            else
+            {
+                e.AcceptedOperation = DataPackageOperation.None;
+                e.DragUIOverride.Caption = "无法处理指定项目，请拖拽文件夹至此";
+            }
+        }
+
+        // 获取Drop事件数据中的第一个文件夹。
+        private async Task<IStorageFolder> GetFirstStorageFolderFromDragEvent(DragEventArgs e)
+        {
+            IStorageFolder firstFolder = null;
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                var items = await e.DataView.GetStorageItemsAsync();
+                foreach (var stgItem in items)
+                {
+                    // 如果找到了一个Folder，记录，并且终止循环。
+                    if (stgItem.IsOfType(StorageItemTypes.Folder))
                     {
-                        sItemTypePrefix = "文件：";
+                        firstFolder = stgItem as IStorageFolder;
+                        break;
                     }
-                    sourceFileList.Items.Clear();
-                    sourceFileList.Items.Add(
-                        sItemTypePrefix + storageItem.Path + "/" + storageItem.Name);
                 }
             }
+#if DEBUG
+            if (currSourceFolder == null)
+            {
+                throw new Exception("异常，没有从Drop事件中发现文件夹数据。");
+            }
+#endif
+            return firstFolder;
+        }
+
+        private void sourceFileButton_DragOver(object sender, DragEventArgs e)
+        {
+            CheckDragOverData_OnlyFolderAccept(e);
+        }
+
+        private async void sourceFileButton_Drop(object sender, DragEventArgs e)
+        {
+            currSourceFolder = await GetFirstStorageFolderFromDragEvent(e);
         }
     }
 }
