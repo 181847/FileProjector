@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -36,37 +37,55 @@ namespace FileProjector
         }
 
         // 检查并且设置DragOver事件的数据，只接受包含文件夹的拖拽。
-        private async void CheckDragOverData_OnlyFolderAccept(DragEventArgs e)
+        private async Task CheckDragEvent_OnlyAcceptFolder(
+            DragEventArgs e, 
+            string acceptCaption = "放置文件夹", 
+            string refuseCaption = "无法处理指定项目，请拖拽文件夹至此")
         {
-            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
-            bool haveFolder = false;
-            // 检查拖拽项目中是否存在文件夹
-            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            var deferral = e.GetDeferral();
+            
+#if DEBUG
+            try
             {
-                var items = await e.DataView.GetStorageItemsAsync();
-                foreach (var stgItem in items)
+#endif
+                    e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+                bool haveFolder = false;
+                // 检查拖拽项目中是否存在文件夹
+                if (e.DataView.Contains(StandardDataFormats.StorageItems))
                 {
-                    if (stgItem.IsOfType(StorageItemTypes.Folder))
+                    var items = await e.DataView.GetStorageItemsAsync();
+                    foreach (var stgItem in items)
                     {
-                        haveFolder = true;
+                        if (stgItem.IsOfType(StorageItemTypes.Folder))
+                        {
+                            haveFolder = true;
+                        }
                     }
-                }
                 
-            }
+                }
 
-            // 只有拖拽项目中包含文件夹才处理接下来的流程。
-            if (haveFolder)
-            {
-                e.AcceptedOperation = DataPackageOperation.Copy;
-                e.DragUIOverride.Caption = "放置文件夹";
+                // 只有拖拽项目中包含文件夹才处理接下来的流程。
+                if (haveFolder)
+                {
+                    e.AcceptedOperation = DataPackageOperation.Copy;
+                    e.DragUIOverride.Caption = acceptCaption;
+                }
+                // 否则不接受拖拽。
+                else
+                {
+                    e.AcceptedOperation = DataPackageOperation.None;
+                    e.DragUIOverride.Caption = refuseCaption;
+                }
+#if DEBUG
             }
-            // 否则不接受拖拽。
-            else
+            catch (System.Runtime.InteropServices.COMException ex)
             {
-                e.AcceptedOperation = DataPackageOperation.None;
-                e.DragUIOverride.Caption = "无法处理指定项目，请拖拽文件夹至此";
+                Debug.WriteLine(ex.Message);
             }
-        }
+#endif
+
+            deferral.Complete();
+        }// CheckDragOverData_OnlyAcceptFolder()
 
         // 获取Drop事件数据中的第一个文件夹。
         private async Task<IStorageFolder> GetFirstStorageFolderFromDragEvent(DragEventArgs e)
@@ -94,14 +113,21 @@ namespace FileProjector
             return firstFolder;
         }
 
-        private void sourceFileButton_DragOver(object sender, DragEventArgs e)
-        {
-            CheckDragOverData_OnlyFolderAccept(e);
-        }
-
         private async void sourceFileButton_Drop(object sender, DragEventArgs e)
         {
+            var deferral = e.GetDeferral();
             currSourceFolder = await GetFirstStorageFolderFromDragEvent(e);
+            deferral.Complete();
+        }
+
+        private async void sourceFileButton_DragEnter(object sender, DragEventArgs e)
+        {
+            await CheckDragEvent_OnlyAcceptFolder(e, "设置源文件夹");
+        }
+
+        private async void testDestSideButton_DragEnter(object sender, DragEventArgs e)
+        {
+            await CheckDragEvent_OnlyAcceptFolder(e, "设置目标件夹");
         }
     }
 }
