@@ -30,6 +30,8 @@ namespace FileProjector
         private IStorageFolder currSourceFolder = null;
         // 当前正在处理的目标文件夹
         private IStorageFolder currDestFolder = null;
+
+        private System.IO.FileSystemWatcher sourceWatcher = null;
         
         public MainPage()
         {
@@ -90,6 +92,7 @@ namespace FileProjector
         // 获取Drop事件数据中的第一个文件夹。
         private async Task<IStorageFolder> GetFirstStorageFolderFromDragEvent(DragEventArgs e)
         {
+            var deferral = e.GetDeferral();
             IStorageFolder firstFolder = null;
             if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
@@ -105,29 +108,35 @@ namespace FileProjector
                 }
             }
 #if DEBUG
-            if (currSourceFolder == null)
+            if (firstFolder == null)
             {
                 throw new Exception("异常，没有从Drop事件中发现文件夹数据。");
             }
 #endif
+            deferral.Complete();
             return firstFolder;
         }
 
-        private async void sourceFileButton_Drop(object sender, DragEventArgs e)
+        private async void sourceFolderButton_Drop(object sender, DragEventArgs e)
         {
-            var deferral = e.GetDeferral();
             currSourceFolder = await GetFirstStorageFolderFromDragEvent(e);
-            deferral.Complete();
+            sourceFolderPathText.Text = currSourceFolder.Path;
         }
 
-        private async void sourceFileButton_DragEnter(object sender, DragEventArgs e)
+        private async void sourceFolderButton_DragEnter(object sender, DragEventArgs e)
         {
             await CheckDragEvent_OnlyAcceptFolder(e, "设置源文件夹");
         }
 
-        private async void testDestSideButton_DragEnter(object sender, DragEventArgs e)
+        private async void destFolderButton_DragEnter(object sender, DragEventArgs e)
         {
             await CheckDragEvent_OnlyAcceptFolder(e, "设置目标件夹");
+        }
+
+        private async void destFolderButton_Drop(object sender, DragEventArgs e)
+        {
+            currDestFolder = await GetFirstStorageFolderFromDragEvent(e);
+            destFolderPathText.Text = currDestFolder.Path;
         }
     }
 }
